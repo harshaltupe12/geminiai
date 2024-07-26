@@ -1,36 +1,79 @@
-This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
 
-## Getting Started
+# Getting Started with setup of Gemini AI
 
-First, run the development server:
-
+### npm install Gemini AI
+```zsh
+npm install @google/generative-ai
+```
+### Generate API Key from this site
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+ai.google.dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+- After visiting this site scroll littel bit down.
+- click on **Get API Key in Google AI Studio**.
+- Click on **Get API Key**.
+- After Completing this, Click on Create new Prompt and Copy code by clicking on **Get Code**.
 
-You can start editing the page by modifying `app/page.js`. The page auto-updates as you edit the file.
+### Create Environment Variable for your Gemini AI API
+```.env
+GEMINI_API_KEY = I5fZ******uybT89
+```
 
-This project uses [`next/font`](https://nextjs.org/docs/basic-features/font-optimization) to automatically optimize and load Inter, a custom Google Font.
+### The Code is to Setup Gemini AI
+GeminiAIModel.js
+```javascript
+const {
+  GoogleGenerativeAI,
+  HarmCategory,
+  HarmBlockThreshold,
+} = require("@google/generative-ai");
 
-## Learn More
+const apiKey = process.env.GEMINI_API_KEY ;
+const genAI = new GoogleGenerativeAI(apiKey);
 
-To learn more about Next.js, take a look at the following resources:
+const model = genAI.getGenerativeModel({
+  model: "gemini-1.5-flash",
+});
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+const generationConfig = {
+  temperature: 1,
+  topP: 0.95,
+  topK: 64,
+  maxOutputTokens: 8192,
+  responseMimeType: "text/plain",
+};
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js/) - your feedback and contributions are welcome!
+export const chatSession = model.startChat({
+  generationConfig,
+  // safetySettings: Adjust safety settings
+  // See https://ai.google.dev/gemini-api/docs/safety-settings
+  history: [],
+});
 
-## Deploy on Vercel
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+```
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/deployment) for more details.
+### Once the setup done we are Ready to interact with AI...
+This is just a demo that how you can work or deal with Response that you get from AI
+
+```javascript
+import { chatSession } from "@/utils/GeminiAIModel";
+const handleSubmit = async (e) => {
+    setLoading(true);
+    e.preventDefault();
+    let finalInput = "give me information about " + input + " in form of JSON";
+    const result = await chatSession.sendMessage(finalInput);
+    const FinalResonse = result.response
+      .text()
+      .replace("```json", "")
+      .replace("```", "");
+    console.log(JSON.parse(FinalResonse));
+    setLoading(false);
+  };
+```
+
+### Congratulations❤️..... Your website just got an upgrade!
+With the power of AI now integrated, your platform is smarter, faster, and ready to deliver an exceptional user experience. Get ready to be amazed by the new capabilities at your fingertips!
+
+
